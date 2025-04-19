@@ -1,0 +1,1 @@
+This project is a simple blog application built using the ASP.NET Core MVC framework. It allows users to create blog posts, manage their profile (including uploading a profile picture), and provides an admin panel for managing the content and users.
