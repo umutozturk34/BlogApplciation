@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Blog.Models.Post>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Post Listesi";
+}
+
+<h2>Post Listesi</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Yeni Post Oluştur</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>İçerik</th>
+            <th>Oluşturulma Tarihi</th>
+            <th>Profil</th>
+            <th>Profil Fotoğrafı</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">@item.Title</a>
+                </td>
+                <td>@item.Content</td>
+                <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>@item.Profile.FullName</td>
+                <td>
+                    <img src="@item.Profile.ProfilePictureUrl" alt="Profil Fotoğrafı" class="profile-picture" />
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin") || item.ProfileId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Düzenle</a>
+                        <form asp-action="Delete" method="post" asp-route-id="@item.Id" onsubmit="return confirm('Bu postu silmek istediğinize emin misiniz?');" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Sil</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,30 @@
+﻿@model Blog.Models.Profile
+
+<h2>Profil Düzenle</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" class="mt-4">
+    <div class="form-group mb-3">
+        <label asp-for="FullName" class="form-label">Ad Soyad</label>
+        <input asp-for="FullName" class="form-control" required />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="ProfilePictureUrl" class="form-label">Profil Fotoğrafı</label>
+        <input type="file" name="profilePicture" class="form-control" />
+
+        @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+        {
+            <img src="@Model.ProfilePictureUrl" alt="Profil Fotoğrafı" class="img-thumbnail mt-2" width="150" />
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Profilimi Güncelle</button>
+</form>

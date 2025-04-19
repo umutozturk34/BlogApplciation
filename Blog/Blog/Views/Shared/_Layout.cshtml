@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Blog.Models
+@using Blog.Data
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject ApplicationDbContext _context
+
+@{
+    var isAuthenticated = Context.User.Identity.IsAuthenticated;
+    var currentUserName = Context.User.Identity.Name;
+    string profilePictureUrl = null;
+
+    if (isAuthenticated)
+    {
+        var user = await UserManager.GetUserAsync(Context.User);
+        if (user != null)
+        {
+            var profile = await _context.Profiles.FirstOrDefaultAsync(p => p.Id == user.Id);
+            if (profile != null)
+            {
+                profilePictureUrl = profile.ProfilePictureUrl;
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Blog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    @if (isAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Ana Sayfa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Post/Index">Postlar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Profile/Edit">Profil Düzenle</a>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="nav-link btn btn-link" style="border: none; background: none;">
+                                    Çıkış Yap
+                                </button>
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Profile/Edit">
+                                @if (!string.IsNullOrEmpty(profilePictureUrl))
+                                {
+                                    <img src="@profilePictureUrl" alt="Profil Fotoğrafı" class="profile-picture" />
+                                }
+                                else
+                                {
+                                    <span class="navbar-text">@currentUserName</span>
+                                }
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <span class="navbar-text text-danger fw-bold">
+                                Hoşgeldiniz! Lütfen
+                                <a href="/Account/Login" class="text-primary">Giriş Yapın</a> veya
+                                <a href="/Account/Register" class="text-primary">Kayıt Olun</a>.
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 Blog Application | All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

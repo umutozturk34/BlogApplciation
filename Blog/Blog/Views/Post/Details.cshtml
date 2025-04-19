@@ -1,0 +1,46 @@
+@model Blog.Models.Post
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<p>@Model.Content</p>
+<p><strong>Oluþturulma Tarihi:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+<p><strong>Profil:</strong> @Model.Profile.FullName</p>
+<img src="@Model.Profile.ProfilePictureUrl" alt="Profil Fotoðrafý" class="profile-picture" />
+
+<h3>Yorumlar</h3>
+<ul>
+    @foreach (var comment in Model.Comments)
+    {
+        <li>
+            <p>@comment.Content</p>
+            <p><strong>Yorum Tarihi:</strong> @comment.CreatedAt.ToString("dd/MM/yyyy")</p>
+            <p><strong>Kullanýcý:</strong> @comment.UserProfile.FullName</p>
+            <img src="@comment.UserProfile.ProfilePictureUrl" alt="Profil Fotoðrafý" class="profile-picture" />
+            @if (User.IsInRole("Admin") || comment.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                <form asp-action="DeleteComment" method="post" asp-route-commentId="@comment.Id" asp-route-postId="@Model.Id" onsubmit="return confirm('Bu yorumu silmek istediðinize emin misiniz?');">
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </form>
+            }
+        </li>
+    }
+</ul>
+
+<h3>Yorum Ekle</h3>
+<form asp-action="AddComment" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="postId" value="@Model.Id" />
+    <div class="form-group">
+        <label for="Content">Yorum</label>
+        <textarea class="form-control" id="Content" name="content"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Yorum Ekle</button>
+</form>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+</div>

@@ -1,0 +1,19 @@
+﻿
+@model Blog.Models.Post
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" />
+    </div>
+    <div class="form-group">
+        <label for="Content">Content</label>
+        <textarea class="form-control" id="Content" name="Content"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
